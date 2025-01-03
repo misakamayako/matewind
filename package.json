@@ -1,5 +1,5 @@
 {
-	"name": "tailmate",
+	"name": "matewind",
 	"version": "1.0.0",
 	"type": "module",
 	"license": "MIT",
@@ -77,8 +77,5 @@
 		"material",
 		"UI-components",
 		"LazyBy"
-	],
-	"publishConfig": {
-		"registry": "https://npm.pkg.github.com"
-	}
+	]
 }

@@ -1,7 +1,7 @@
 import ArrowPathIcon from "@heroicons/react/20/solid/ArrowPathIcon";
 import type { ReactNode } from "react";
 
-import TailmateButtonStyle from "./Button.module.css";
+import MatewindButtonStyle from "./Button.module.css";
 
 interface Props {
 	children?: ReactNode;
@@ -16,8 +16,8 @@ export default function Button(props: Props) {
 	return (
 		<button
 			className={[
-				TailmateButtonStyle.TailmateButton,
-				props.type==="cancel"? TailmateButtonStyle.TailmateCancelButton:null,
+				MatewindButtonStyle.MatewindButton,
+				props.type==="cancel"? MatewindButtonStyle.MatewindCancelButton:null,
 				props.className,
 			].join(" ")}
 			disabled={props.disabled}
