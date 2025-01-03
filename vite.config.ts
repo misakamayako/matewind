@@ -9,7 +9,7 @@ export default defineConfig({
 		lib: {
 			entry: "./src/index.ts",
 			formats: ["es", "cjs", "umd"],
-			name: "tailmate",
+			name: "matewind",
 		},
 	},
 });
