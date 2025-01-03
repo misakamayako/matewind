@@ -1,2 +1,2 @@
-# Tailmate
+# matewind
 基于tailwind+material设计的ui框架和一些工具类，更多的等有空再写了,使用可以先看storybook
