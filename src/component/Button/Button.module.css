@@ -1,0 +1,19 @@
+.TailmateButton {
+    @apply inline-flex items-center gap-2 rounded-md bg-gray-700;
+    @apply py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner;
+    @apply shadow-white/10 focus:outline-none hover:bg-gray-600 active:bg-gray-700;
+    @apply active:outline-1 active:outline-white;
+}
+.TailmateCancelButton{
+    @apply text-gray-700 bg-white border-gray-700 border;
+    @apply hover:bg-gray-200 active:bg-gray-200;
+}
+
+.TailmateButton[disabled] {
+    @apply opacity-50 cursor-not-allowed;
+
+}
+
+.TailmateButton ~ .TailmateButton {
+    @apply ml-4;
+}

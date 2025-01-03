@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 types
 main
-./storybook-static
+/storybook-static/

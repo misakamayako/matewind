@@ -1,0 +1,27 @@
+.FormItem {
+  @apply flex mb-6 px-2 mr-2 flex-wrap;
+  @apply justify-start items-center;
+
+  .FormItemLabel {
+    @apply shrink-0 pl-1;
+
+    &.TopLabel {
+      @apply block !w-full mb-1;
+    }
+  }
+
+  .FormItemContent {
+    @apply grow;
+  }
+
+  &.inlineForm {
+    @apply inline-flex justify-center items-center;
+  }
+}
+.Form.inlineForm{
+  @apply flex flex-row flex-wrap;
+  @apply content-center justify-start items-center;
+}
+.Form{
+  @apply mb-4;
+}
