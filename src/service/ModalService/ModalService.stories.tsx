@@ -15,7 +15,7 @@ export const ShowModal = () => {
 
 	return (
 		<button
-			className="px-4 py-2 bg-blue-500  rounded"
+			className="px-4 py-2 bg-blue-500  rounded-sm"
 			onClick={handleShowModal}
 		>
         显示弹窗
@@ -35,7 +35,7 @@ export const ConfirmModal = () => {
 
 	return (
 		<button
-			className="px-4 py-2 bg-green-500  rounded"
+			className="px-4 py-2 bg-green-500  rounded-sm"
 			onClick={handleConfirmModal}
 		>
         显示确认弹窗
@@ -56,7 +56,7 @@ export const PromptModal = () => {
 
 	return (
 		<button
-			className="px-4 py-2 bg-purple-500  rounded"
+			className="px-4 py-2 bg-purple-500  rounded-sm"
 			onClick={handlePromptModal}
 		>
         显示输入弹窗

@@ -33,6 +33,11 @@ export const Default: Story = {
 			control: "text",
 			description: "Can be a number or a numeric string.",
 		},
+		children:{
+			table: {
+				disable: true,
+			},
+		},
 	},
 };
 

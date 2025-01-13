@@ -1,0 +1,12 @@
+@import 'tailwindcss';
+.tailmateSelectRoot{
+		@apply relative mt-2 w-full;
+	.tailmateSelectListBox{
+		@apply relative w-full cursor-default rounded-md;
+		@apply bg-white ~"py-1.5" pl-3 pr-10 text-left;
+		@apply text-gray-900 shadow-xs ring-1 ring-inset;
+		@apply ring-gray-300;
+		@apply focus:outline-hidden focus:ring-2 focus:ring-indigo-500;
+		@apply sm:text-sm sm:leading-6;
+	}
+}

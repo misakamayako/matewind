@@ -1,5 +1,6 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import type { ReactNode } from "react";
+import ms from "./Modal.module.less"
 
 import Button from "../Button/Button.tsx";
 // eslint-disable-next-line react-refresh/only-export-components
@@ -23,20 +24,20 @@ export interface ModalProps {
 export default function Modal(props: ModalProps) {
 	if (props.open) {
 		return (
-			<div className="fixed inset-0 bg-black opacity-50 z-50 flex content-center justify-center">
+			<div className={ms.tailmateModalContainer}>
 				<Dialog
-					className="relative z-50"
+					className={ms.tailmateModalDialog}
 					open={true}
 					onClose={() => props.onClose(ModalAction.close)}
 				>
-					<div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-						<DialogPanel className="space-y-4 border bg-white p-6 w-[480px]">
-							<DialogTitle className="font-bold">
+					<div className={ms.tailmateModalMain}>
+						<DialogPanel className={ms.tailmateModalPanel}>
+							<DialogTitle className={ms.tailmateModalTitle}>
 								{props.title}
 							</DialogTitle>
 							{props.children}
 							<hr />
-							<div className="flex justify-end">
+							<div style={{display: "flex",justifyContent: "flex-end"}}>
 								{props.showCancel ? (
 									<Button
 										type={"cancel"}

@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+.MatewindButton {
+	@apply shadow-md inset-shadow-sm inset-shadow-white/20 ring ring-blue-600 inset-ring inset-ring-white/15;
+  @apply inline-flex items-center bg-gray-700 cursor-pointer ~"rounded-md";
+  @apply ~"py-1.5" px-3 text-sm/6 font-semibold text-white shadow-inner;
+  @apply shadow-white/10;
+  &:not([disabled]):not(.MatewindButtonLoading){
+    @apply active:outline-1 active:outline-white  focus:outline-none hover:bg-gray-600 active:bg-gray-700;
+  }
+	.MatewindButtonContent{
+		@apply shrink-0;
+	}
+	&.MatewindCancelButton{
+		@apply text-gray-700 bg-white border-gray-700 border;
+		&:not([disabled]):not(.MatewindButtonLoading){
+			@apply hover:bg-sky-50 active:bg-cyan-100;
+		}
+	}
+}
+.MatewindButton[disabled] {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.MatewindButton ~ .MatewindButton {
+  @apply ml-4;
+}
+.MatewindButtonLoading{
+	@apply cursor-wait;
+	svg{
+		@apply animate-spin cursor-pointer w-4 mr-1;
+	}
+}

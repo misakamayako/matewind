@@ -1,4 +1,6 @@
-import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
+import type {InputHTMLAttributes, TextareaHTMLAttributes} from "react";
+
+import fls from "./FloatingLabelInput.module.less";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 	label?: string;
@@ -14,31 +16,13 @@ type Props = TextAreaProps | InputProps;
 export default function FloatingLabelInput(props: Props) {
 	return (
 		<label
-			className={[
-				"relative",
-				"block",
-				"w-full",
-				"rounded-md",
-				"border",
-				"border-gray-200",
-				"shadow-sm",
-				"focus-within:border-blue-600",
-				"focus-within:ring-1",
-				"focus-within:ring-blue-600",
-			].join(" ")}
+			className={fls.tailmateInputLabel}
 		>
 			{props.textArea ? (
 				<textarea
 					className={[
 						"peer",
-						"border-none",
-						"bg-transparent",
-						"placeholder-transparent",
-						"focus:border-transparent",
-						"focus:outline-none",
-						"focus:ring-0",
-						"w-full",
-						"resize-none",
+						fls.tailmateInputTextarea,
 					].join(" ")}
 					maxLength={props.maxLength}
 					placeholder={props.placeholder}
@@ -50,13 +34,7 @@ export default function FloatingLabelInput(props: Props) {
 				<input
 					className={[
 						"peer",
-						"border-none",
-						"bg-transparent",
-						"w-full",
-						"placeholder-transparent",
-						"focus:border-transparent",
-						"focus:outline-none",
-						"focus:ring-0",
+						fls.tailmateInput,
 					].join(" ")}
 					maxLength={props.maxLength}
 					placeholder={props.placeholder}
@@ -68,16 +46,7 @@ export default function FloatingLabelInput(props: Props) {
 			{props.label ? (
 				<span
 					className={[
-						"pointer-events-none",
-						"absolute",
-						"start-2.5",
-						"top-0",
-						"-translate-y-1/2",
-						"bg-white",
-						"p-0.5",
-						"text-xs",
-						"text-gray-700",
-						"transition-all",
+						fls.tailmateFloatLabel,
 						props.textArea
 							? "peer-placeholder-shown:top-4"
 							: "peer-placeholder-shown:top-1/2",

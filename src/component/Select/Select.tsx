@@ -13,6 +13,8 @@ import {
 import { useMemo } from "react";
 import type { MouseEvent } from "react";
 
+import ss from "./Select.module.less";
+
 interface BaseSelection {
 	id: number;
 	text: string;
@@ -77,8 +79,8 @@ export default function Select<T extends BaseSelection>({
 		<Listbox multiple={multiple} value={value} onChange={filterNotNull}>
 			{({ open }) => (
 				<>
-					<div className="relative mt-2 w-full">
-						<ListboxButton className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
+					<div className={ss.tailmateSelectRoot}>
+						<ListboxButton className={ss.List}>
 							<div className="flex items-center h-6">
 								<span className="ml-3 block truncate peer">
 									{text}
@@ -118,7 +120,7 @@ export default function Select<T extends BaseSelection>({
 							leaveTo="opacity-0"
 							show={open}
 						>
-							<ListboxOptions className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+							<ListboxOptions className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-hidden sm:text-sm">
 								{options.map((selection) => (
 									<ListboxOption
 										className={({ focus }) =>

@@ -1,7 +1,7 @@
 import ArrowPathIcon from "@heroicons/react/20/solid/ArrowPathIcon";
 import type { ReactNode } from "react";
 
-import MatewindButtonStyle from "./Button.module.css";
+import MatewindButtonStyle from "./Button.module.less";
 
 interface Props {
 	children?: ReactNode;
@@ -18,6 +18,7 @@ export default function Button(props: Props) {
 			className={[
 				MatewindButtonStyle.MatewindButton,
 				props.type==="cancel"? MatewindButtonStyle.MatewindCancelButton:null,
+				props.loading? MatewindButtonStyle.MatewindButtonLoading:null,
 				props.className,
 			].join(" ")}
 			disabled={props.disabled}
@@ -29,14 +30,10 @@ export default function Button(props: Props) {
 			}}
 		>
 			{props.loading === true ? (
-				<ArrowPathIcon
-					className={["animate-spin", "cursor-pointer", "w-4"].join(
-						" ",
-					)}
-				/>
+				<ArrowPathIcon/>
 			) : null}
 			{props.children ? (
-				<span className={"flex-shrink-0"}>{props.children}</span>
+				<span className={MatewindButtonStyle.MatewindButtonContent}>{props.children}</span>
 			) : null}
 		</button>
 	);

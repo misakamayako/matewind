@@ -26,3 +26,4 @@ types
 main
 /storybook-static/
 matewind-*.tgz
+/.run/
