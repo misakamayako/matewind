@@ -24,5 +24,5 @@
 		"declaration": false,
 		"emitDeclarationOnly": false,
 	},
-	"include": ["src/**/*.stories.tsx"]
+	"include": ["src/vite-env.d.ts","src/**/*.stories.tsx","src/**/*.tsx"]
 }

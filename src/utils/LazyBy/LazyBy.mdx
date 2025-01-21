@@ -1,9 +1,29 @@
+import { Meta, Story } from '@storybook/blocks';
+import * as LazyByStories from './LazyBy.stories.tsx';
+
+<Meta title="Utils/LazyBy" of={LazyByStories} />
+
+# LazyBy 工具类
+
+`LazyBy` 示例演示了如何使用懒加载方法获取数据，并且防止多处同时访问造成资源浪费。
+
+## 示例
+<Story name={"default"} />
+
+## 用法
+
+- `LazyBy<T>`构造函数只有一个入参，`tast`为获取数据的方法，数据结果需要为非undefined的任何值。
+- `lazyBy`实例只有一个方法，`instance.get()`返回值为`Promise<T>`,根据使用时数据获取的情况，有三种行为
+	1. 当第一次调用时，会唤醒`tast`方法获取数据，当成功后，缓存并返回数据;
+	2. 当在获取数据中时，复用并返回当前的`Promise`，不会发起新的请求;
+	3. 当获取数据成功后，直接返回缓存值;
+## 使用
+```tsx
 import {useRef, useState} from "react";
 
-import LazyBy from "./LazyBy.ts";
-import {Button} from "../../component";
-export default {
-};
+import {Button,LazyBy} from "matewind";
+
+
 const fetchData = async () => {
 	// 模拟一个异步任务
 	return new Promise<string>((resolve) => {
@@ -12,7 +32,7 @@ const fetchData = async () => {
 };
 
 
-export const Example = () => {
+const LazyByExample = () => {
 	const lazyData = useRef(new LazyBy(fetchData));
 	const [loading,setLoading] = useState(false);
 	const [data,setData] = useState("");
@@ -38,3 +58,5 @@ export const Example = () => {
 		</div>
 	);
 };
+
+```

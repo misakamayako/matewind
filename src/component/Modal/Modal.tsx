@@ -1,14 +1,9 @@
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import type { ReactNode } from "react";
-import ms from "./Modal.module.less"
+import {Dialog, DialogPanel, DialogTitle} from "@headlessui/react";
+import type {ReactNode} from "react";
 
+import ms from "./Modal.module.less";
+import {ModalAction} from "./ModalAction.ts";
 import Button from "../Button/Button.tsx";
-// eslint-disable-next-line react-refresh/only-export-components
-export enum ModalAction {
-	confirm,
-	cancel,
-	close,
-}
 
 export interface ModalProps {
 	open: boolean;

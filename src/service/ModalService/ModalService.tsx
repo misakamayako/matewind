@@ -5,7 +5,8 @@ import {createRoot} from "react-dom/client";
 
 import FloatingLabelInput from "../../component/Input/FloatingLabelInput.tsx";
 import type { ModalProps} from "../../component/Modal/Modal.tsx";
-import Modal, {ModalAction} from "../../component/Modal/Modal.tsx";
+import Modal from "../../component/Modal/Modal.tsx";
+import {ModalAction} from "../../component/Modal/ModalAction.ts";
 
 
 
