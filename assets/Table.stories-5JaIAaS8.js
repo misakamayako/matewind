@@ -1,0 +1,10 @@
+import{j as t}from"./jsx-runtime-CLpGMVip.js";import{T as a}from"./Table-CASTOlGJ.js";const C={component:a},r=[{id:1,name:"John Doe",age:28,address:"123 Main St"},{id:2,name:"Jane Smith",age:34,address:"456 Elm St"},{id:3,name:"Alice Johnson",age:45,address:"789 Oak St"}],n=[{title:"ID",props:"id",width:"50px"},{title:"Name",props:"name",width:"150px"},{title:"Age",props:"age",width:"80px"},{title:"Address",props:"address"}],e=()=>t.jsx(a,{columns:n,dataSource:r}),o=()=>{const S=[...n,{title:"Actions",renderCell:x=>t.jsx("button",{className:"text-blue-500 hover:underline",onClick:()=>alert(`Edit row: ${x.id}`),children:"Edit"}),width:"100px"}];return t.jsx(a,{columns:S,dataSource:r})},s=()=>t.jsx(a,{strip:!0,columns:n,dataSource:r});e.__docgenInfo={description:"",methods:[],displayName:"BasicTable"};o.__docgenInfo={description:"",methods:[],displayName:"TableWithCustomRender"};s.__docgenInfo={description:"",methods:[],displayName:"StripedTable"};var d,c,i;e.parameters={...e.parameters,docs:{...(d=e.parameters)==null?void 0:d.docs,source:{originalSource:"() => <Table columns={columns} dataSource={dataSource} />",...(i=(c=e.parameters)==null?void 0:c.docs)==null?void 0:i.source}}};var l,m,u;o.parameters={...o.parameters,docs:{...(l=o.parameters)==null?void 0:l.docs,source:{originalSource:`() => {
+  const customColumns: ColumnConfig<RowData>[] = [...columns, {
+    title: "Actions",
+    renderCell: row => <button className="text-blue-500 hover:underline" onClick={() => alert(\`Edit row: \${row.id}\`)}>
+            Edit
+                </button>,
+    width: "100px"
+  }];
+  return <Table columns={customColumns} dataSource={dataSource} />;
+}`,...(u=(m=o.parameters)==null?void 0:m.docs)==null?void 0:u.source}}};var p,b,h;s.parameters={...s.parameters,docs:{...(p=s.parameters)==null?void 0:p.docs,source:{originalSource:"() => <Table strip columns={columns} dataSource={dataSource} />",...(h=(b=s.parameters)==null?void 0:b.docs)==null?void 0:h.source}}};const w=["BasicTable","TableWithCustomRender","StripedTable"];export{e as BasicTable,s as StripedTable,o as TableWithCustomRender,w as __namedExportsOrder,C as default};
