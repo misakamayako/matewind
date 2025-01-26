@@ -14,14 +14,14 @@ const options = [
 ];
 
 export const SingleSelect = () => {
-	const [value, setValue] = useState<number>(1);
+	const [value, setValue] = useState<number>();
 
 	return (
 		<Select
 			options={options}
 			placeholder="Select an option"
 			value={value}
-			onChange={(newValue) => setValue(newValue as number)}
+			onChange={(newValue) => setValue(newValue)}
 		/>
 	);
 };
@@ -35,7 +35,7 @@ export const MultiSelect = () => {
 			options={options}
 			placeholder="Select multiple options"
 			value={value}
-			onChange={(newValue) => setValue(newValue as number[])}
+			onChange={(newValue) => setValue(newValue)}
 		/>
 	);
 };
@@ -59,7 +59,7 @@ export const WithAddNew = () => {
 			options={dynamicOptions}
 			placeholder="Add new options"
 			value={value}
-			onChange={(newValue) => setValue(newValue as number[])}
+			onChange={(newValue) => setValue(newValue)}
 		/>
 	);
 };

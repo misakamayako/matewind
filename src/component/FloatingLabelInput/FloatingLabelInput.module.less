@@ -3,19 +3,35 @@
 	@apply relative block w-full rounded-md border;
 	@apply border-gray-200 shadow-xs focus-within:border-blue-600;
 	@apply focus-within:ring-1 focus-within:ring-blue-600;
-	@apply overflow-auto;
+	@apply overflow-visible flex flex-row;
 }
 .tailmateInputTextarea{
-	@apply border-none bg-transparent placeholder-transparent;
+	@apply border-none bg-transparent;
 	@apply focus:border-transparent focus:outline-hidden focus:ring-0 w-full resize-none;
+	@apply focus:placeholder:text-slate-400;
+	@apply placeholder:text-xs  placeholder-transparent;
 }
 .tailmateInput{
-	@apply border-none bg-transparent w-full placeholder-transparent;
+	@apply border-none bg-transparent w-full;
 	@apply focus:border-transparent focus:outline-hidden focus:ring-0;
 	@apply appearance-none bg-white border-gray-500	border;
-	@apply px-3 py-2 text-base;
+	@apply px-3 py-2 text-base rounded-md focus:placeholder:text-slate-400;
+	@apply placeholder:text-xs  placeholder-transparent;
 }
 .tailmateFloatLabel{
 	@apply pointer-events-none absolute ~"start-2.5" top-0 ~"-translate-y-1/2";
 	@apply bg-white ~"p-0.5" text-xs text-gray-700 transition-all;
+}
+.tailmatePeer{
+	&:placeholder-shown{
+		~.tailmateAfter{
+			@apply top-5 text-sm;
+		}
+		&textarea ~.tailmateAfter{
+			@apply ~"top-1/2";
+		}
+	}
+	&:focus ~.tailmateAfter,:focus-within ~.tailmateAfter{
+		@apply top-0 text-xs;
+	}
 }

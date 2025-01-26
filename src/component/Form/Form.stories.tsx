@@ -1,57 +1,69 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import Form from "./Form.tsx";
-import FormItem from "./FormItem.tsx";
-import Input from "../Input/FloatingLabelInput.tsx";
+import {Form,FormItem,FloatingLabelInput} from "..";
 
 const meta:Meta<typeof Form> = {
 	component: Form,
-	render: ({width, labelPosition, inline}) => (
-		<Form inline={inline} labelPosition={labelPosition} width={width}>
-			<FormItem label={"this is a label"}>
-				<Input/>
-			</FormItem>
-			<FormItem label={"this is second label"}>
-				<Input/>
-			</FormItem>
-		</Form>
-	),
 };
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
-	name:"default form",
-	args:{
-		width:"120",
-		labelPosition:"left",
+export const WithDefaultLabel:Story = (props:Parameters<typeof Form>[0])=>{
+	return (
+		<Form inline={props.inline} labelPosition={props.labelPosition} width={props.width}>
+			<FormItem label={"this is a label"}>
+				<FloatingLabelInput/>
+			</FormItem>
+			<FormItem label={"this is second label"}>
+				<FloatingLabelInput/>
+			</FormItem>
+		</Form>
+	);
+};
+WithDefaultLabel.args={
+	width:"120",
+	labelPosition:"left",
+};
+WithDefaultLabel.argTypes = {
+	width:{
+		control: "text",
+		description: "Can be a number or a numeric string.",
 	},
-	argTypes:{
-		width:{
-			control: "text",
-			description: "Can be a number or a numeric string.",
+	children:{
+		table: {
+			disable: true,
 		},
-		children:{
-			table: {
-				disable: true,
-			},
+	},
+	labelPosition:{
+		options: ["top", "left"],
+		control: { type: "radio" },
+	},
+};
+
+export const WithFloatingLabel:Story = (props:Parameters<typeof Form>[0])=>{
+	return (
+		<Form {...props} width={0}>
+			<FormItem>
+				<FloatingLabelInput label={"this is a label"}/>
+			</FormItem>
+			<FormItem>
+				<FloatingLabelInput label={"this is another label"}/>
+			</FormItem>
+		</Form>
+	);
+};
+WithFloatingLabel.args={
+};
+WithDefaultLabel.argTypes = {
+	width:{
+		control: "text",
+		description: "Can be a number or a numeric string.",
+	},
+	children:{
+		table: {
+			disable: true,
 		},
 	},
 };
 
-export const InlineForm:Story={
-	name:"inlineForm",
-	args:{
-		inline:true,
-		width:"120",
-		labelPosition:"top",
-	},
-	argTypes:{
-		width:{
-			control: "text",
-			description: "Can be a number or a numeric string.",
-		},
-	},
-};

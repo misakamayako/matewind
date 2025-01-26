@@ -1,54 +1,26 @@
-import {
-	Listbox,
-	ListboxButton,
-	ListboxOption,
-	ListboxOptions,
-	Transition,
-} from "@headlessui/react";
-import {
-	CheckIcon,
-	ChevronUpDownIcon,
-	PlusIcon,
-} from "@heroicons/react/20/solid";
-import { useMemo } from "react";
-import type { MouseEvent } from "react";
+import type {MouseEvent} from "react";
+import { useState,useMemo} from "react";
+
 
 import ss from "./Select.module.less";
+import type {Item, SelectProps, SelectValue} from "./SelectTypes";
+import FloatingLabelInput from "../FloatingLabelInput";
 
-interface BaseSelection {
-	id: number;
-	text: string;
-}
 
-function classNames(...classes: string[]) {
-	return classes.filter(Boolean).join(" ");
-}
-
-interface SelectProps<T extends BaseSelection> {
-	value: number | number[];
-	options: T[];
-	onChange: (value: number | number[]) => void;
-	multiple?: boolean;
-	addNew?: () => void;
-	placeholder?: string;
-}
-
-export default function Select<T extends BaseSelection>({
-	value,
-	options,
-	onChange,
-	addNew,
-	placeholder,
-	multiple = false,
-}: SelectProps<T>) {
+export default function Select<
+				T extends Item<V>,
+				V extends NonNullable<unknown>,
+				M extends boolean = false>
+(props: SelectProps<T, V, M>) {
+	const { value, options, onChange, multiple=false, addNew, placeholder, clearable=false } = props;
 	const translator = useMemo(() => {
-		const hashMap = new Map<number, string>();
+		const hashMap = new Map<V, string>();
 		options.forEach((it) => {
-			hashMap.set(it.id, it.text);
+			hashMap.set(it.id, it.label);
 		});
 		return hashMap;
 	}, [options]);
-	const text = useMemo(() => {
+	const displayText = useMemo(() => {
 		if (multiple) {
 			if (Array.isArray(value) && value.length > 0) {
 				const result: string[] = [];
@@ -57,167 +29,39 @@ export default function Select<T extends BaseSelection>({
 				});
 				return result.join();
 			} else {
-				return "";
+				return undefined;
 			}
 		} else {
-			return options.find((it) => it.id === value)?.text ?? "请选择";
+			return options.find((it) => it.id === value)?.label;
 		}
-	}, [value, translator]);
+	}, [multiple, value, translator, options]);
 	const handleIfAdd = (event: MouseEvent<HTMLDivElement>) => {
 		event.stopPropagation();
 		addNew!();
 	};
-	const filterNotNull = (newValue: number | number[]) => {
+	const filterNotNull = (newValue: SelectValue<V, M>) => {
 		if (!onChange) return;
-		if (Array.isArray(newValue)) {
-			onChange(newValue.filter((it) => it !== null));
-		} else if(newValue !== null ) {
-			onChange(newValue);
+
+		if (multiple) {
+			// 如果是多选模式，过滤掉 null 值
+			const filteredValue = (Array.isArray(newValue) ? newValue : []).filter(
+				(it): it is NonNullable<V> => it !== null,
+			);
+			onChange(filteredValue as SelectValue<V, M>);
+		} else {
+			// 如果是单选模式，直接调用 onChange
+			onChange(newValue ?? undefined);
 		}
 	};
+	const [showList,setShowList] = useState(false);
 	return (
-		<Listbox multiple={multiple} value={value} onChange={filterNotNull}>
-			{({ open }) => (
-				<>
-					<div className={ss.tailmateSelectRoot}>
-						<ListboxButton className={ss.List}>
-							<div className="flex items-center h-6">
-								<span className="ml-3 block truncate peer">
-									{text}
-								</span>
-								<span
-									className={[
-										"pointer-events-none",
-										"absolute",
-										"start-2.5",
-										"top-0",
-										"-translate-y-1/2",
-										"bg-white",
-										"p-0.5",
-										"text-xs",
-										"text-gray-700",
-										"transition-all",
-										"peer-empty:top-4",
-										"peer-empty:text-sm",
-										"peer-focus:top-0",
-										"peer-focus:text-xs",
-									].join(" ")}
-								>
-									{placeholder ?? "请选择："}
-								</span>
-							</div>
-							<span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-								<ChevronUpDownIcon
-									aria-hidden="true"
-									className="h-5 w-5 text-gray-400"
-								/>
-							</span>
-						</ListboxButton>
-
-						<Transition
-							leave="transition ease-in duration-100"
-							leaveFrom="opacity-100"
-							leaveTo="opacity-0"
-							show={open}
-						>
-							<ListboxOptions className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-hidden sm:text-sm">
-								{options.map((selection) => (
-									<ListboxOption
-										className={({ focus }) =>
-											classNames(
-												focus
-													? "bg-indigo-600 text-white"
-													: "",
-												!focus ? "text-gray-900" : "",
-												"relative cursor-default select-none py-2 pl-3 pr-9",
-											)
-										}
-										key={selection.id}
-										value={selection.id}
-									>
-										{({ selected, focus }) => (
-											<>
-												<div className="flex items-center">
-													<span
-														className={classNames(
-															selected
-																? "font-semibold"
-																: "font-normal",
-															"ml-3 block truncate",
-														)}
-													>
-														{selection.text}
-													</span>
-												</div>
-
-												{selected ? (
-													<span
-														className={classNames(
-															focus
-																? "text-white"
-																: "text-indigo-600",
-															"absolute inset-y-0 right-0 flex items-center pr-4",
-														)}
-													>
-														<CheckIcon
-															aria-hidden="true"
-															className="h-5 w-5"
-														/>
-													</span>
-												) : null}
-											</>
-										)}
-									</ListboxOption>
-								))}
-								{addNew ? (
-									<ListboxOption
-										className={({ focus }) =>
-											classNames(
-												focus
-													? "bg-indigo-600 text-white"
-													: "",
-												!focus ? "text-gray-900" : "",
-												"relative cursor-default select-none py-2 pl-3 pr-9",
-											)
-										}
-										value={null}
-										onClick={handleIfAdd}
-									>
-										{({ focus }) => (
-											<>
-												<div className="flex items-center">
-													<span
-														className={classNames(
-															"font-normal",
-															"ml-3 block truncate",
-														)}
-													>
-														新增
-													</span>
-												</div>
-
-												<span
-													className={classNames(
-														focus
-															? "text-white"
-															: "text-indigo-600",
-														"absolute inset-y-0 right-0 flex items-center pr-4",
-													)}
-												>
-													<PlusIcon
-														aria-hidden="true"
-														className="h-5 w-5"
-													/>
-												</span>
-											</>
-										)}
-									</ListboxOption>
-								) : null}
-							</ListboxOptions>
-						</Transition>
-					</div>
-				</>
-			)}
-		</Listbox>
+		<div className={ss.tailmateSelectRoot}>
+			<div className={ss.tailmateSelectDisplay} onClick={()=>setShowList(true)}>
+				<FloatingLabelInput label={props.label} placeholder={props.placeholder} />
+			</div>
+			{
+				showList?<div/>:null
+			}
+		</div>
 	);
 }

@@ -5,7 +5,7 @@ import FormItemStyle from "./FormItem.module.less";
 import {InlineProducer, LabelPositionContext, WidthProducer} from "./FormProducer.ts";
 
 interface Props {
-    label: ReactNode;
+    label?: ReactNode;
     children: ReactNode;
 }
 

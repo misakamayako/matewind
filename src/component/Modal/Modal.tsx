@@ -1,9 +1,9 @@
 import {Dialog, DialogPanel, DialogTitle} from "@headlessui/react";
 import type {ReactNode} from "react";
 
+import {Button} from "..";
 import ms from "./Modal.module.less";
 import {ModalAction} from "./ModalAction.ts";
-import Button from "../Button/Button.tsx";
 
 export interface ModalProps {
 	open: boolean;

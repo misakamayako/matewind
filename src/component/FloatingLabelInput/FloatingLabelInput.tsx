@@ -1,15 +1,24 @@
-import type {InputHTMLAttributes, TextareaHTMLAttributes} from "react";
+import type React from "react";
 
 import fls from "./FloatingLabelInput.module.less";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-	label?: string;
-	textArea?: false;
+interface BaseInputProps {
+	maxLength?: number
+	placeholder?: string
+	rows?: number
+	value?: string
 }
 
-interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface InputProps extends BaseInputProps {
+	label?: string;
+	textArea?: false;
+	onChange?: React.ChangeEventHandler<HTMLInputElement>
+}
+
+interface TextAreaProps extends BaseInputProps {
 	label?: string;
 	textArea: true;
+	onChange?: React.ChangeEventHandler<HTMLTextAreaElement>
 }
 
 type Props = TextAreaProps | InputProps;
@@ -21,7 +30,7 @@ export default function FloatingLabelInput(props: Props) {
 			{props.textArea ? (
 				<textarea
 					className={[
-						"peer",
+						fls.tailmatePeer,
 						fls.tailmateInputTextarea,
 					].join(" ")}
 					maxLength={props.maxLength}
@@ -31,28 +40,26 @@ export default function FloatingLabelInput(props: Props) {
 					onChange={props.onChange}
 				/>
 			) : (
-				<input
-					className={[
-						"peer",
-						fls.tailmateInput,
-					].join(" ")}
-					maxLength={props.maxLength}
-					placeholder={props.placeholder}
-					type="text"
-					value={props.value}
-					onChange={props.onChange}
-				/>
+				<>
+					<span>prefix </span>
+					<input
+						className={[
+							fls.tailmatePeer,
+							fls.tailmateInput,
+						].join(" ")}
+						maxLength={props.maxLength}
+						placeholder={props.placeholder || "  "}
+						type="text"
+						value={props.value}
+						onChange={props.onChange}
+					/>
+				</>
 			)}
 			{props.label ? (
 				<span
 					className={[
 						fls.tailmateFloatLabel,
-						props.textArea
-							? "peer-placeholder-shown:top-4"
-							: "peer-placeholder-shown:top-1/2",
-						"peer-placeholder-shown:text-sm",
-						"peer-focus:top-0",
-						"peer-focus:text-xs",
+						fls.tailmateAfter,
 					].join(" ")}
 				>
 					{props.label}

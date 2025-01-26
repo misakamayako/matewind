@@ -15,6 +15,7 @@ export const Default: Story = {
 	args: {
 		children: <span>click me</span>,
 		onClick: fn(()=>{console.log(1);}),
+		type: "default",
 	},
 	argTypes: {
 		children: {
