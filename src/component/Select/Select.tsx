@@ -1,67 +1,159 @@
-import type {MouseEvent} from "react";
-import { useState,useMemo} from "react";
-
+import {useEffect, useState, useMemo, useRef} from "react";
 
 import ss from "./Select.module.less";
-import type {Item, SelectProps, SelectValue} from "./SelectTypes";
+import type {KeyableType, SelectProps, SelectValue} from "./SelectTypes";
 import FloatingLabelInput from "../FloatingLabelInput";
+import Option from "./Option.tsx";
+import {useDebounce} from "../../utils";
 
 
 export default function Select<
-				T extends Item<V>,
-				V extends NonNullable<unknown>,
-				M extends boolean = false>
-(props: SelectProps<T, V, M>) {
-	const { value, options, onChange, multiple=false, addNew, placeholder, clearable=false } = props;
-	const translator = useMemo(() => {
-		const hashMap = new Map<V, string>();
+				ID extends KeyableType, Multiple extends boolean=false
+>(props: SelectProps<ID,Multiple>){
+	const { value, options, multiple=false } = props;
+	const [searchText,setSearchText] = useState("");
+	const [interSelected,setInterSelected] = useState(new Set<ID>());
+	const intermeDict = useMemo(() => {
+		const hashMap = new Map<ID, string>();
 		options.forEach((it) => {
 			hashMap.set(it.id, it.label);
 		});
 		return hashMap;
 	}, [options]);
-	const displayText = useMemo(() => {
-		if (multiple) {
-			if (Array.isArray(value) && value.length > 0) {
-				const result: string[] = [];
-				value.forEach((it) => {
-					result.push(translator.get(it)!);
+	useEffect(() => {
+		if (value && Array.isArray(value)) {
+			setInterSelected(new Set(value));
+		} else if (value) {
+			setInterSelected(new Set([value as ID]));
+		} else {
+			setInterSelected(new Set());
+		}
+	}, [value]);
+	const displayText = useMemo(()=>{
+		if(multiple){
+			const result:Array<string> = [];
+			interSelected.forEach(id=>{
+				if(intermeDict.has(id)){
+					result.push(String(intermeDict.get(id)));
+				} else {
+					result.push(id.toString());
+				}
+			});
+			return result.join(",");
+		} else {
+			if(interSelected.size!==0){
+				let result:string = "";
+				interSelected.forEach(id=>{
+					if(intermeDict.has(id)){
+						result=String(intermeDict.get(id));
+					} else {
+						result=id.toString();
+					}
 				});
-				return result.join();
+				return result;
 			} else {
-				return undefined;
+				return null;
 			}
-		} else {
-			return options.find((it) => it.id === value)?.label;
 		}
-	}, [multiple, value, translator, options]);
-	const handleIfAdd = (event: MouseEvent<HTMLDivElement>) => {
-		event.stopPropagation();
-		addNew!();
-	};
-	const filterNotNull = (newValue: SelectValue<V, M>) => {
-		if (!onChange) return;
-
-		if (multiple) {
-			// 如果是多选模式，过滤掉 null 值
-			const filteredValue = (Array.isArray(newValue) ? newValue : []).filter(
-				(it): it is NonNullable<V> => it !== null,
-			);
-			onChange(filteredValue as SelectValue<V, M>);
-		} else {
-			// 如果是单选模式，直接调用 onChange
-			onChange(newValue ?? undefined);
-		}
-	};
+	},[interSelected, intermeDict, multiple]);
 	const [showList,setShowList] = useState(false);
+	const handleSelect = (id:ID)=>{
+		const newSet = new Set(interSelected);
+		if(newSet.has(id)){
+			newSet.delete(id);
+		} else if(props.multiple){
+			newSet.add(id);
+		} else {
+			newSet.clear();
+			newSet.add(id);
+			setShowList(false);
+			setSearchText("");
+		}
+		setInterSelected(newSet);
+		 if(props.multiple){
+			props.onChange(Array.from(newSet) as SelectValue<ID, Multiple>);
+		} else if(newSet.size===0){
+			 props.onChange(undefined as SelectValue<ID, Multiple>);
+		 } else{
+			props.onChange(id as SelectValue<ID, Multiple>);
+		}
+	};
+	const selectRef = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		const handleClickOutside = (e: MouseEvent) => {
+			if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
+				setShowList(false);
+				setSearchText("");
+			}
+		};
+
+		document.addEventListener("click", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("click", handleClickOutside);
+		};
+	}, []);
+	const filteredOptions = useMemo(() => {
+		if (!props.remote) {
+			// 本地搜索过滤逻辑
+			return options.filter(option =>
+				option.label.toLowerCase().includes(searchText.toLowerCase()),
+			);
+		}
+		// 远程搜索时直接返回所有选项（由父组件控制）
+		return options;
+	}, [searchText, options, props.remote]);
+
+	// 添加防抖的远程搜索
+	const debouncedSearch = useDebounce((text: string) => {
+		if (props.remote) {
+			props.remote(text);
+		}
+	}, 300);
+
+	const handleSearch = (text: string) => {
+		setSearchText(text);
+		debouncedSearch(text);
+	};
 	return (
-		<div className={ss.tailmateSelectRoot}>
+		<div className={ss.tailmateSelectRoot} ref={selectRef}>
 			<div className={ss.tailmateSelectDisplay} onClick={()=>setShowList(true)}>
-				<FloatingLabelInput label={props.label} placeholder={props.placeholder} />
+				{
+					props.multiple ?
+						null
+						: searchText?
+							null
+							:<span className={[ss.displayText,(showList||!displayText)?ss.open:null].join(" ")}>{displayText??props.placeholder}</span>
+				}
+				{
+					props.search ?
+						<FloatingLabelInput
+							clearable
+							label={props.label}
+							value={searchText}
+							onChange={e=>handleSearch(e.target.value)}
+						/>
+						:null
+				}
+
 			</div>
 			{
-				showList?<div/>:null
+				showList?
+					<div className={ss.tailmateSelectListBoxRoot}>
+						{props.remote&&props.loading
+							?<span className={ss.noData}>loading...</span>
+							:filteredOptions.length>0?
+								filteredOptions.map(it=>{
+									return <Option
+										current={it}
+										key={it.id}
+										selected={interSelected.has(it.id)}
+										onClick={handleSelect}
+									/>;
+								})
+								:<span className={ss.noData}>no data</span>}
+					</div>:null
 			}
 		</div>
 	);
-}
+};

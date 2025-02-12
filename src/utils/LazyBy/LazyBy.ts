@@ -28,9 +28,10 @@ class LazyBy<T> {
 	async get(): Promise<T> {
 		if (!this.initialized) {
 			if (this.promise === undefined) {
-				this.promise = (typeof scheduler?.postTask === "function"
+				const localScheduler = typeof scheduler?.postTask === "function"
 					? (scheduler.postTask<T>).bind(scheduler)
-					: async (fn: () => Promise<T>) => fn())(async () => {
+					: async (fn: () => Promise<T>) => fn();
+				this.promise = localScheduler(async () => {
 					try {
 						this.result = await this.task();
 						this.initialized = true;

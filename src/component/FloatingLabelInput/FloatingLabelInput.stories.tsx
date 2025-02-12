@@ -1,4 +1,4 @@
-import type { Meta ,StoryFn} from "@storybook/react";
+import type { Meta ,StoryFn } from "@storybook/react";
 
 import FloatingLabelInput from "./FloatingLabelInput";
 
@@ -7,6 +7,7 @@ export default {
 	component: FloatingLabelInput,
 	argTypes: {
 		label: { control: "text", description: "Label for the input field" },
+		prefix: { control: "text", description: "prefix for the input field,also can be ReactNode,not used in textarea" },
 		textArea: { control: "boolean", description: "Render as textarea if true" },
 		placeholder: { control: "text", description: "Placeholder text" },
 		value: { control: "text", description: "Value of the input/textarea" },
@@ -21,6 +22,7 @@ const Template:StoryFn = (args) => <FloatingLabelInput {...args} />;
 export const DefaultInput = Template.bind({});
 DefaultInput.args = {
 	label: "Default Input",
+	prefix: "A prefix",
 	placeholder: "Enter text here...",
 	textArea: false,
 };

@@ -6,3 +6,4 @@ export {default as Modal} from "./Modal/Modal.tsx";
 export {default as Pager} from "./Pager/Pager.tsx";
 export {default as Select} from "./Select/Select.tsx";
 export {default as Table} from "./Table/Table.tsx";
+export {default as Tag} from "./Tag/Tag.tsx";

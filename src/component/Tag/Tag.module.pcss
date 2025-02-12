@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+.tailmateTag{
+	@apply hover:text-white text-xs;
+	@apply text-gray-900 relative;
+	@apply select-none py-0.5 px-1;
+	@apply bg-gradient-to-r;
+	@apply flex-row inline-flex;
+	@apply items-center rounded-md;
+	@apply border hover:border-transparent;
+	@apply border-zinc-700;
+	@apply transition-colors duration-300;
+	@apply from-white from-10% via-white via-30% to-white to-90%;
+}
+.tailmateTag:hover{
+	@apply from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%
+}
+.closeSvg{
+	@apply text-sm cursor-pointer w-4 h-4 ml-2;
+}

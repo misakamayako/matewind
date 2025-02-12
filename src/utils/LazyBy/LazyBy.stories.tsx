@@ -1,9 +1,11 @@
+import type {Meta} from "@storybook/react";
 import {useRef, useState} from "react";
 
 import LazyBy from "./LazyBy.ts";
 import {Button} from "../../component";
 export default {
-};
+	title: "UTILS/LazyBy",
+} as Meta;
 const fetchData = async () => {
 	// 模拟一个异步任务
 	return new Promise<string>((resolve) => {

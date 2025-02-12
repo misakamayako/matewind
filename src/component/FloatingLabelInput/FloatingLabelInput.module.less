@@ -16,13 +16,14 @@
 	@apply focus:border-transparent focus:outline-hidden focus:ring-0;
 	@apply appearance-none bg-white border-gray-500	border;
 	@apply px-3 py-2 text-base rounded-md focus:placeholder:text-slate-400;
-	@apply placeholder:text-xs  placeholder-transparent;
+	@apply placeholder:text-xs  placeholder-transparent text-stone-900;
 }
 .tailmateFloatLabel{
 	@apply pointer-events-none absolute ~"start-2.5" top-0 ~"-translate-y-1/2";
-	@apply bg-white ~"p-0.5" text-xs text-gray-700 transition-all;
+	@apply bg-white ~"p-0.5" text-xs text-gray-700 transition-all text-stone-900;
 }
 .tailmatePeer{
+	order: 2;
 	&:placeholder-shown{
 		~.tailmateAfter{
 			@apply top-5 text-sm;
@@ -30,8 +31,20 @@
 		&textarea ~.tailmateAfter{
 			@apply ~"top-1/2";
 		}
+		~.tailmatePrefix{
+			@apply hidden;
+		}
 	}
-	&:focus ~.tailmateAfter,:focus-within ~.tailmateAfter{
-		@apply top-0 text-xs;
+	&:focus {
+		~ .tailmateAfter, :focus-within ~ .tailmateAfter {
+			@apply top-0 text-xs;
+		}
+		~ .tailmatePrefix{
+			@apply block;
+		}
 	}
+}
+.tailmatePrefix{
+	order:1;
+	@apply block leading-10 pl-2 text-zinc-600 whitespace-nowrap;
 }

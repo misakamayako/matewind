@@ -12,11 +12,18 @@ import * as SemaphoreStories from './Semaphore.stories.tsx';
 
 ## 用法
 - `Semaphore`类只有一个入参，代表信号量的数量，创建成功后不可再修改；
-- `semaphore` 实例主要包括两个方法，一个是获取信号量`acquire`，另一个是释放信号量`release`，当 "获取信号量" 时，代码会请求获取信号量，有空闲资源时，会为当前方法分配1个信号量，资源不足时，当前任务会进入等待。当"释放信号量" 时，信号量会增加一个，如任务队列不为空，将按照先进先出的原则分配信号量并释放锁
+- `semaphore` 实例有两个方法：
+	- **acquire 方法**：尝试获取一个许可。如果当前有可用许可，则立即返回一个释放函数；否则等待直到有许可可用。
+	- **release 方法**：释放许可。如果有等待队列，则唤醒队列中下一个等待者；当所有资源已释放时，不会有任何行为。
 
 ## 控制并发请求数量
 
-在正式请求前通过 `semaphore.acquire()` 方法，你可以限制任意数量（示例中为三个）个请求同时进行。如果当前正在处理的请求数量已经达到最大值，则新的请求将被排队，直到有请求完成（成功或失败）并释放信号量。
+在正式请求前通过 `semaphore.acquire()` 方法，你可以限制任意数量（示例中为五个）个请求同时进行。如果当前正在处理的请求数量已经达到最大值，则新的请求将被排队，直到有请求完成（无论成功或失败）并释放信号量。
+
+## 注意
+**确保许可释放**
+
+为了防止因异常导致许可未释放，建议将业务逻辑置于 try...finally 块中，确保在任务结束后一定调用释放函数，否则有可能导致死锁产生
 
 ### 示例操作
 
@@ -28,10 +35,13 @@ import * as SemaphoreStories from './Semaphore.stories.tsx';
 import {Semaphore} from "matewind"
 const semaphore = new Semaphore(5)
 async function demoRequest(){
-	await semaphore.acquire()
-	setTimeout(()=>{
-		semaphore.release()
-	},1000)
+	const release = await semaphore.acquire()
+	try{
+			// await some job done
+	} finally {
+	  release()
+		// or semaphore.release()
+	}
 }
 ```
 

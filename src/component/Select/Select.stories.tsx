@@ -7,22 +7,30 @@ export default {
 };
 
 const options = [
-	{ id: 1, text: "Option 1" },
-	{ id: 2, text: "Option 2" },
-	{ id: 3, text: "Option 3" },
-	{ id: 4, text: "Option 4" },
+	{ id: 1, label: "Option 1" },
+	{ id: 2, label: "Option 2" },
+	{ id: 3, label: "Option 3" },
+	{ id: 4, label: "Option 4" },
+	{ id: 5, label: "Option 5" },
 ];
 
 export const SingleSelect = () => {
 	const [value, setValue] = useState<number>();
 
 	return (
-		<Select
-			options={options}
-			placeholder="Select an option"
-			value={value}
-			onChange={(newValue) => setValue(newValue)}
-		/>
+		<div>
+			<Select
+				search
+				options={options}
+				placeholder="Select an option"
+				value={value}
+				onChange={(newValue) => {
+					console.count("callback");
+					setValue(newValue);
+				}}
+			/>
+			<p>value:{value}</p>
+		</div>
 	);
 };
 
@@ -40,26 +48,25 @@ export const MultiSelect = () => {
 	);
 };
 
-export const WithAddNew = () => {
-	const [value, setValue] = useState<number[]>([]);
-	const [dynamicOptions, setDynamicOptions] = useState(options);
+// export const WithAddNew = () => {
+// 	const [value, setValue] = useState<number[]>([]);
+// 	const [dynamicOptions, setDynamicOptions] = useState(options);
 
-	const handleAddNew = () => {
-		const newOption = {
-			id: dynamicOptions.length + 1,
-			text: `Option ${dynamicOptions.length + 1}`,
-		};
-		setDynamicOptions([...dynamicOptions, newOption]);
-	};
-
-	return (
-		<Select
-			multiple
-			addNew={handleAddNew}
-			options={dynamicOptions}
-			placeholder="Add new options"
-			value={value}
-			onChange={(newValue) => setValue(newValue)}
-		/>
-	);
-};
+// const handleAddNew = () => {
+// 	const newOption = {
+// 		id: dynamicOptions.length + 1,
+// 		label: `Option ${dynamicOptions.length + 1}`,
+// 	};
+// 	setDynamicOptions([...dynamicOptions, newOption]);
+// };
+//
+// 	return (
+// 		<Select
+// 			multiple
+// 			options={dynamicOptions}
+// 			placeholder="Add new options"
+// 			value={value}
+// 			onChange={(newValue) => setValue(newValue)}
+// 		/>
+// 	);
+// };

@@ -7,6 +7,8 @@ interface BaseInputProps {
 	placeholder?: string
 	rows?: number
 	value?: string
+	prefix?:React.ReactNode
+	clearable?:boolean
 }
 
 interface InputProps extends BaseInputProps {
@@ -41,7 +43,6 @@ export default function FloatingLabelInput(props: Props) {
 				/>
 			) : (
 				<>
-					<span>prefix </span>
 					<input
 						className={[
 							fls.tailmatePeer,
@@ -53,6 +54,7 @@ export default function FloatingLabelInput(props: Props) {
 						value={props.value}
 						onChange={props.onChange}
 					/>
+					{props.prefix ? <span className={fls.tailmatePrefix}>{props.prefix}</span>: null}
 				</>
 			)}
 			{props.label ? (

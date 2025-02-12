@@ -1,26 +1,32 @@
 export default class Semaphore {
 	private permits: number;
+	private readonly maxPermits: number;
 	private queue: Array<() => void>;
 
 	constructor(maxPermits: number) {
 		this.permits = maxPermits;
+		this.maxPermits = maxPermits;
 		this.queue = [];
 	}
 
-	async acquire(): Promise<void> {
+	async acquire(): Promise<()=>void> {
 		if (this.permits > 0) {
 			this.permits--;
-			return;
+			return this.release.bind(this);
 		}
 
-		await new Promise<void>((resolve) => this.queue.push(resolve));
+		return await new Promise<()=>void>((resolve) => {
+			this.queue.push(()=>{
+				resolve(this.release.bind(this));
+			});
+		});
 	}
 
 	release(): void {
 		if (this.queue.length > 0) {
-			const resolve = this.queue.shift();
-			resolve?.();
-		} else {
+			const next = this.queue.shift();
+			next?.();
+		} else if(this.permits<this.maxPermits) {
 			this.permits++;
 		}
 	}
