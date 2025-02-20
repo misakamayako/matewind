@@ -7,3 +7,4 @@ export {default as Pager} from "./Pager/Pager.tsx";
 export {default as Select} from "./Select/Select.tsx";
 export {default as Table} from "./Table/Table.tsx";
 export {default as Tag} from "./Tag/Tag.tsx";
+export {default as Option} from "./Select/Option.tsx";

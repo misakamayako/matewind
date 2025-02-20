@@ -1,23 +1,24 @@
-export type KeyableType = string | number
+export type KeyableType = string | number;
+
 export type Item<ID extends KeyableType> = {
-	label:string,
-	id:ID
-} &Record<unknown, unknown>
+	label: string;
+	id: ID;
+	[key: string]: unknown;
+};
 
-export type SelectValue<ID, Multiple extends boolean> = Multiple extends true ? Array<ID> : (ID|undefined);
+export type SelectValue<ID extends KeyableType=string, Multiple extends boolean> =
+	Multiple extends true ? ID[] : (ID | undefined);
 
-export interface SelectProps<ID extends KeyableType, Multiple extends boolean = false> {
+export interface SelectProps<Multiple extends boolean = false, ID extends KeyableType = string> {
 	value?: SelectValue<ID, Multiple>;
 	options: Item<ID>[];
 	onChange: (value: SelectValue<ID, Multiple>) => void;
 	multiple?: Multiple;
 	placeholder?: string;
 	clearable?: boolean;
-	label?:string;
-	search?:true;
-	remote?:(text:string)=>Promise
-	loading?:boolean
-	handleAddNew?: (text:string) => void;
+	label?: string;
+	search?: boolean;
+	remote?: (text: string) => unknown;
+	loading?: boolean;
+	handleAddNew?: (text: string) => void;
 }
-// export interface SelectFC<T extends Item<V>, V extends KeyableType, M extends boolean = false>(props: SelectProps<T, V, M>)
-

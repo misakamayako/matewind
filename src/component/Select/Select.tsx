@@ -1,84 +1,66 @@
 import {useEffect, useState, useMemo, useRef} from "react";
+import type { MouseEventHandler} from "react";
 
+import {Option,Tag} from "..";
 import ss from "./Select.module.less";
 import type {KeyableType, SelectProps, SelectValue} from "./SelectTypes";
-import FloatingLabelInput from "../FloatingLabelInput";
-import Option from "./Option.tsx";
 import {useDebounce} from "../../utils";
+import FloatingLabelInput from "../FloatingLabelInput";
 
 
 export default function Select<
-				ID extends KeyableType, Multiple extends boolean=false
->(props: SelectProps<ID,Multiple>){
+				ID extends KeyableType, Multiple extends boolean = false
+>(props: SelectProps<Multiple,ID>){
 	const { value, options, multiple=false } = props;
-	const [searchText,setSearchText] = useState("");
-	const [interSelected,setInterSelected] = useState(new Set<ID>());
-	const intermeDict = useMemo(() => {
-		const hashMap = new Map<ID, string>();
-		options.forEach((it) => {
-			hashMap.set(it.id, it.label);
-		});
-		return hashMap;
-	}, [options]);
+	const [searchText,setSearchText] = useState<string>();
+	const internalDict = useRef(new Map<ID, string>());
 	useEffect(() => {
-		if (value && Array.isArray(value)) {
-			setInterSelected(new Set(value));
-		} else if (value) {
-			setInterSelected(new Set([value as ID]));
-		} else {
-			setInterSelected(new Set());
-		}
-	}, [value]);
-	const displayText = useMemo(()=>{
-		if(multiple){
-			const result:Array<string> = [];
-			interSelected.forEach(id=>{
-				if(intermeDict.has(id)){
-					result.push(String(intermeDict.get(id)));
-				} else {
-					result.push(id.toString());
-				}
-			});
-			return result.join(",");
-		} else {
-			if(interSelected.size!==0){
-				let result:string = "";
-				interSelected.forEach(id=>{
-					if(intermeDict.has(id)){
-						result=String(intermeDict.get(id));
-					} else {
-						result=id.toString();
-					}
-				});
-				return result;
-			} else {
-				return null;
-			}
-		}
-	},[interSelected, intermeDict, multiple]);
+		const current = internalDict.current;
+		options.forEach((it) => {
+			current.set(it.id, it.label);
+		});
+	}, [options]);
 	const [showList,setShowList] = useState(false);
-	const handleSelect = (id:ID)=>{
-		const newSet = new Set(interSelected);
-		if(newSet.has(id)){
-			newSet.delete(id);
-		} else if(props.multiple){
-			newSet.add(id);
+	const displayText = useMemo(() => {
+		if (multiple) {
+			const selectedIds = (Array.isArray(value) ? value : []) as ID[];
+			const result: string[] = [];
+			selectedIds.forEach(id => {
+				result.push(internalDict.current.has(id) ? String(internalDict.current.get(id)) : id.toString());
+			});
+			return result;
 		} else {
-			newSet.clear();
-			newSet.add(id);
-			setShowList(false);
+			const singleValue = value as (ID | undefined);
+			if ((singleValue||singleValue===0) && internalDict.current.has(singleValue)) {
+				return String(internalDict.current.get(singleValue));
+			}
+			return singleValue ? singleValue.toString() : undefined;
+		}
+	}, [value, internalDict, multiple]);
+	const handleSelect = (id: ID) => {
+		let nextValue: SelectValue<ID, Multiple>;
+		if (props.multiple) {
+			const currentValues = (Array.isArray(value) ? [...value] : []) as ID[];
+			const index = currentValues.indexOf(id);
+			if (index > -1) {
+				currentValues.splice(index, 1);
+			} else {
+				currentValues.push(id);
+			}
+			nextValue = currentValues as SelectValue<ID, Multiple>;
+			if(searchText&&searchText.trim()){
+				inputRef.current?.focus();
+			}
+		} else {
+			nextValue = (value === id ? null : id) as SelectValue<ID, Multiple>;
+			if(nextValue!==null) setShowList(false);
 			setSearchText("");
 		}
-		setInterSelected(newSet);
-		 if(props.multiple){
-			props.onChange(Array.from(newSet) as SelectValue<ID, Multiple>);
-		} else if(newSet.size===0){
-			 props.onChange(undefined as SelectValue<ID, Multiple>);
-		 } else{
-			props.onChange(id as SelectValue<ID, Multiple>);
-		}
+		props.onChange(nextValue);
 	};
 	const selectRef = useRef<HTMLDivElement>(null);
+	const selectRoot = useRef<HTMLDivElement>(null);
+	const inputRef = useRef<HTMLLabelElement>(null);
 	useEffect(() => {
 		const handleClickOutside = (e: MouseEvent) => {
 			if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
@@ -94,17 +76,14 @@ export default function Select<
 		};
 	}, []);
 	const filteredOptions = useMemo(() => {
-		if (!props.remote) {
-			// 本地搜索过滤逻辑
+		if (!props.remote&&searchText) {
 			return options.filter(option =>
 				option.label.toLowerCase().includes(searchText.toLowerCase()),
 			);
 		}
-		// 远程搜索时直接返回所有选项（由父组件控制）
 		return options;
 	}, [searchText, options, props.remote]);
 
-	// 添加防抖的远程搜索
 	const debouncedSearch = useDebounce((text: string) => {
 		if (props.remote) {
 			props.remote(text);
@@ -115,12 +94,26 @@ export default function Select<
 		setSearchText(text);
 		debouncedSearch(text);
 	};
+	const removeTag = (index:number)=>{
+		const current = [...(value as ID[])];
+		current.splice(index,1);
+		props.onChange?.(current as SelectValue<ID, Multiple>);
+	};
+	const handleClickRoot: MouseEventHandler<HTMLDivElement> = (e)=>{
+		if(e.target === selectRoot.current){
+			setShowList(!showList);
+		} else if(inputRef.current&&e.target&&inputRef.current.contains(e.target as HTMLElement)){
+			setShowList(true);
+		}
+	};
 	return (
 		<div className={ss.tailmateSelectRoot} ref={selectRef}>
-			<div className={ss.tailmateSelectDisplay} onClick={()=>setShowList(true)}>
+			<div className={[ss.tailmateSelectDisplay,props.multiple?ss.withPadding:null].join(" ")} ref={selectRoot} onClick={handleClickRoot}>
 				{
-					props.multiple ?
-						null
+					props.multiple===true ?
+						(displayText as string[]).map((key,index)=>{
+							return <Tag key={key} onClose={()=>removeTag(index)}>{key}</Tag>;
+						})
 						: searchText?
 							null
 							:<span className={[ss.displayText,(showList||!displayText)?ss.open:null].join(" ")}>{displayText??props.placeholder}</span>
@@ -129,7 +122,10 @@ export default function Select<
 					props.search ?
 						<FloatingLabelInput
 							clearable
+							className={ss.tailmateInputInSelect}
 							label={props.label}
+							ref={inputRef}
+							size={"small"}
 							value={searchText}
 							onChange={e=>handleSearch(e.target.value)}
 						/>
@@ -147,7 +143,7 @@ export default function Select<
 									return <Option
 										current={it}
 										key={it.id}
-										selected={interSelected.has(it.id)}
+										selected={Array.isArray(value)?value.some(it2=>it2===it.id):value===it.id}
 										onClick={handleSelect}
 									/>;
 								})

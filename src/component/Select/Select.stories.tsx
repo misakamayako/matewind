@@ -1,72 +1,133 @@
-import { useState } from "react";
+import type {StoryFn, Meta } from "@storybook/react";
+import React, {useCallback, useState} from "react";
 
-import Select from "./Select";
+import {Select} from ".."; // Adjust the import path as needed
+import type { SelectProps } from "./SelectTypes";
 
 export default {
+	title: "Component/Select",
+	tags:["autodoc"],
 	component: Select,
-};
+	argTypes: {
+		onChange: { action: "changed" },
+	},
+} as Meta;
 
-const options = [
-	{ id: 1, label: "Option 1" },
-	{ id: 2, label: "Option 2" },
-	{ id: 3, label: "Option 3" },
-	{ id: 4, label: "Option 4" },
-	{ id: 5, label: "Option 5" },
-];
+const Template: StoryFn<SelectProps<boolean, string>> = (args) => {
+	const [value, setValue] = useState<string | string[] | null>(args.multiple ? [] : null);
 
-export const SingleSelect = () => {
-	const [value, setValue] = useState<number>();
-
-	return (
-		<div>
-			<Select
-				search
-				options={options}
-				placeholder="Select an option"
-				value={value}
-				onChange={(newValue) => {
-					console.count("callback");
-					setValue(newValue);
-				}}
-			/>
-			<p>value:{value}</p>
-		</div>
-	);
-};
-
-export const MultiSelect = () => {
-	const [value, setValue] = useState<number[]>([1, 2]);
-
+	
 	return (
 		<Select
-			multiple
-			options={options}
-			placeholder="Select multiple options"
+			{...args}
+			// @ts-expect-error:as template
 			value={value}
-			onChange={(newValue) => setValue(newValue)}
+			onChange={(newValue) => {
+				// @ts-expect-error:as template
+				setValue(newValue);
+				// @ts-expect-error:as template
+				args.onChange(newValue);
+			}}
 		/>
 	);
 };
 
-// export const WithAddNew = () => {
-// 	const [value, setValue] = useState<number[]>([]);
-// 	const [dynamicOptions, setDynamicOptions] = useState(options);
+export const SingleSelect = Template.bind({});
+SingleSelect.args = {
+	multiple: false,
+	options: [
+		{ id: "1", label: "Option 1" },
+		{ id: "2", label: "Option 2" },
+		{ id: "3", label: "Option 3" },
+	],
+	placeholder: "Select an option",
+};
 
-// const handleAddNew = () => {
-// 	const newOption = {
-// 		id: dynamicOptions.length + 1,
-// 		label: `Option ${dynamicOptions.length + 1}`,
-// 	};
-// 	setDynamicOptions([...dynamicOptions, newOption]);
-// };
-//
-// 	return (
-// 		<Select
-// 			multiple
-// 			options={dynamicOptions}
-// 			placeholder="Add new options"
-// 			value={value}
-// 			onChange={(newValue) => setValue(newValue)}
-// 		/>
-// 	);
-// };
+export const MultipleSelect = Template.bind({});
+MultipleSelect.args = {
+	multiple: true,
+	options: [
+		{ id: "1", label: "Option 1" },
+		{ id: "2", label: "Option 2" },
+		{ id: "3", label: "Option 3" },
+	],
+	placeholder: "Select options",
+};
+
+export const SearchableSingleSelect = Template.bind({});
+SearchableSingleSelect.args = {
+	multiple: false,
+	search: true,
+	options: [
+		{ id: "1", label: "Option 1" },
+		{ id: "2", label: "Option 2" },
+		{ id: "3", label: "Option 3" },
+	],
+	placeholder: "Search and select an option",
+};
+
+export const SearchableMultipleSelect = Template.bind({});
+SearchableMultipleSelect.args = {
+	multiple: true,
+	search: true,
+	options: [
+		{ id: "1", label: "Option 1" },
+		{ id: "2", label: "Option 2" },
+		{ id: "3", label: "Option 3" },
+	],
+	placeholder: "Search and select options",
+};
+
+export const RemoteSearchableSingleSelect = ()=>{
+	const [loading,setLoading] = useState(false);
+	const [options ,setOption]= useState([
+ 		{ id: "1", label: "Option 1" },
+ 		{ id: "2", label: "Option 2" },
+ 		{ id: "3", label: "Option 3" },
+ 	]);
+	const [value,setValue] = useState<string>();
+	const handleSearch = useCallback((text:string)=>{
+		setLoading(true);
+		setTimeout(()=>{
+			setLoading(false);
+			setOption([{id:`new${text}`,label:`new option:${text}`}]);
+		},1500);
+	},[]);
+	return (
+		<Select
+			search
+			loading={loading}
+			options={options}
+			remote={handleSearch}
+			value={value}
+			onChange={it=>setValue(it)}
+		/>
+	);
+};
+export const RemoteSearchableMultipleSelect =()=>{
+	const [loading,setLoading] = useState(false);
+	const [options ,setOption]= useState([
+		{ id: "1", label: "Option 1" },
+		{ id: "2", label: "Option 2" },
+		{ id: "3", label: "Option 3" },
+	]);
+	const [value,setValue] = useState<string[]>([]);
+	const handleSearch = useCallback((text:string)=>{
+		setLoading(true);
+		setTimeout(()=>{
+			setLoading(false);
+			setOption([{id:`new${text}`,label:`new option:${text}`}]);
+		},1500);
+	},[]);
+	return (
+		<Select
+			multiple
+			search
+			loading={loading}
+			options={options}
+			remote={handleSearch}
+			value={value}
+			onChange={it=>setValue(it)}
+		/>
+	);
+};

@@ -1,0 +1,80 @@
+import { Meta} from '@storybook/blocks';
+
+<Meta title="Utils/UseDebounce"/>
+
+# `useDebounce` Hook
+
+`useDebounce` 是一个自定义 React Hook，用于防抖处理。它可以延迟函数的执行，直到用户停止触发该函数超过指定的时间，常用于搜索框、输入框等场景，减少不必要的频繁操作。
+
+## 用法
+
+```tsx
+import {useDebounce} from 'matewind';
+```
+
+### 传入参数
+
+- `fn`: 你希望防抖的函数，它将被延迟执行。
+- `delay`: 延迟时间（以毫秒为单位），即多长时间后才执行 `fn` 函数。
+
+### 返回值
+
+`useDebounce` 返回一个新的函数，使用时将该函数传递给事件处理器，`useDebounce` 会自动处理延迟逻辑。
+
+## 示例
+
+### 基本示例
+
+```tsx
+import React, { useState } from 'react';
+import useDebounce from './hooks/useDebounce';
+
+function SearchComponent() {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // 使用 useDebounce 防抖搜索函数
+  const handleSearch = useDebounce((query: string) => {
+    console.log('Searching for:', query);
+    // 在这里你可以发起 API 请求或执行其他操作
+  }, 500);
+
+  return (
+    <input
+      type="text"
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        handleSearch(e.target.value); // 防抖
+      }}
+      placeholder="输入搜索内容..."
+    />
+  );
+}
+
+export default SearchComponent;
+```
+
+### 解释
+
+1. `handleSearch` 是由 `useDebounce` 返回的防抖函数，它接收 `query`（即搜索的输入值）作为参数。
+2. 每次输入时，`onChange` 事件会更新 `searchTerm` 状态并调用 `handleSearch`，但 `handleSearch` 只会在用户停止输入超过 500 毫秒时执行一次。
+
+### 用途
+
+此 hook 可以广泛应用于以下场景：
+
+- **输入框的实时搜索**：减少每次输入时都发起 API 请求的频率。
+- **表单验证**：防止频繁的表单校验调用。
+- **滚动事件监听**：在用户停止滚动后执行操作（如懒加载等）。
+
+## 参数说明
+
+### `fn`
+
+- 类型：`(...args: Args) => void`
+- 说明：需要防抖的函数。
+
+### `delay`
+
+- 类型：`number`
+- 说明：防抖的延迟时间，单位为毫秒。

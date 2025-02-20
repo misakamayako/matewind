@@ -1,33 +1,42 @@
-import type React from "react";
+import  React from "react";
 
 import fls from "./FloatingLabelInput.module.less";
 
 interface BaseInputProps {
 	maxLength?: number
 	placeholder?: string
-	rows?: number
 	value?: string
-	prefix?:React.ReactNode
-	clearable?:boolean
+	style?: React.CSSProperties
+	className?: string
+	ref?: React.RefObject<HTMLLabelElement|null>
 }
 
+type Size = "normal" | "small"
+
 interface InputProps extends BaseInputProps {
-	label?: string;
-	textArea?: false;
-	onChange?: React.ChangeEventHandler<HTMLInputElement>
+	textArea?: false,
+	label?: string,
+	onChange?: React.ChangeEventHandler<HTMLInputElement>,
+	prefix?: React.ReactNode,
+	clearable?: boolean,
+	size?: Size,
 }
 
 interface TextAreaProps extends BaseInputProps {
-	label?: string;
 	textArea: true;
-	onChange?: React.ChangeEventHandler<HTMLTextAreaElement>
+	label?: string;
+	onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
+	rows?: number;
+	size: undefined;
 }
 
 type Props = TextAreaProps | InputProps;
 export default function FloatingLabelInput(props: Props) {
 	return (
 		<label
-			className={fls.tailmateInputLabel}
+			className={[fls.tailmateInputLabel, props.size === "small" ? fls.tailmateInputSmall : null, props.className].join(" ")}
+			ref={props.ref}
+			style={props.style}
 		>
 			{props.textArea ? (
 				<textarea
@@ -54,7 +63,8 @@ export default function FloatingLabelInput(props: Props) {
 						value={props.value}
 						onChange={props.onChange}
 					/>
-					{props.prefix ? <span className={fls.tailmatePrefix}>{props.prefix}</span>: null}
+					{props.prefix ?
+						<span className={[fls.tailmatePrefix, props.label ? null : fls.alwaysShow].join(" ")}>{props.prefix}</span> : null}
 				</>
 			)}
 			{props.label ? (

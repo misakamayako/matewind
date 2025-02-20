@@ -15,15 +15,15 @@ function Form(props: Props) {
 	const inline = props.inline ?? false;
 	const labelPosition = props.labelPosition ?? "left";
 	return (
-					<form className={[FormStyle.Form, inline ? FormStyle.inlineForm : null].join(" ")}>
-						<WidthProducer.Provider value={innerWidth}>
-							<InlineProducer.Provider value={inline}>
-								<LabelPositionContext.Provider value={labelPosition}>
-										{props.children}
-								</LabelPositionContext.Provider>
-							</InlineProducer.Provider>
-						</WidthProducer.Provider>
-					</form>
+		<form className={[FormStyle.Form, inline ? FormStyle.inlineForm : null].join(" ")}>
+			<WidthProducer.Provider value={innerWidth}>
+				<InlineProducer.Provider value={inline}>
+					<LabelPositionContext.Provider value={labelPosition}>
+						{props.children}
+					</LabelPositionContext.Provider>
+				</InlineProducer.Provider>
+			</WidthProducer.Provider>
+		</form>
 	);
 }
 
