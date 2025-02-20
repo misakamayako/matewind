@@ -1,15 +1,11 @@
 import type {ReactNode} from "react";
-import { useState} from "react";
-import type { Root} from "react-dom/client";
+import type {Root} from "react-dom/client";
 import {createRoot} from "react-dom/client";
 
-import FloatingLabelInput from "../../component/Input/FloatingLabelInput.tsx";
-import type { ModalProps} from "../../component/Modal/Modal.tsx";
-import Modal from "../../component/Modal/Modal.tsx";
+import {PrivateInput} from "./PrivateInput.tsx";
+import {Modal} from "../../component";
+import type {ModalProps} from "../../component/Modal/Modal.tsx";
 import {ModalAction} from "../../component/Modal/ModalAction.ts";
-
-
-
 
 interface ModalConfig {
     showCancel?: boolean;
@@ -104,20 +100,4 @@ class ModalService {
 
 export default new ModalService();
 
-interface ModalInputInterface {
-    setValue(value: string): void;
-}
 
-const PrivateInput = (props: ModalInputInterface) => {
-	const [value, setValue] = useState("");
-
-	return (
-		<FloatingLabelInput
-			value={value}
-			onChange={(e) => {
-				setValue(e.target.value);
-				props.setValue(e.target.value); // 这里应传入新的 value 而不是旧的
-			}}
-		/>
-	);
-};

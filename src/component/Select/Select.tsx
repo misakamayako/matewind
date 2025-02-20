@@ -1,223 +1,159 @@
-import {
-	Listbox,
-	ListboxButton,
-	ListboxOption,
-	ListboxOptions,
-	Transition,
-} from "@headlessui/react";
-import {
-	CheckIcon,
-	ChevronUpDownIcon,
-	PlusIcon,
-} from "@heroicons/react/20/solid";
-import { useMemo } from "react";
-import type { MouseEvent } from "react";
+import {useEffect, useState, useMemo, useRef} from "react";
 
 import ss from "./Select.module.less";
+import type {KeyableType, SelectProps, SelectValue} from "./SelectTypes";
+import FloatingLabelInput from "../FloatingLabelInput";
+import Option from "./Option.tsx";
+import {useDebounce} from "../../utils";
 
-interface BaseSelection {
-	id: number;
-	text: string;
-}
 
-function classNames(...classes: string[]) {
-	return classes.filter(Boolean).join(" ");
-}
-
-interface SelectProps<T extends BaseSelection> {
-	value: number | number[];
-	options: T[];
-	onChange: (value: number | number[]) => void;
-	multiple?: boolean;
-	addNew?: () => void;
-	placeholder?: string;
-}
-
-export default function Select<T extends BaseSelection>({
-	value,
-	options,
-	onChange,
-	addNew,
-	placeholder,
-	multiple = false,
-}: SelectProps<T>) {
-	const translator = useMemo(() => {
-		const hashMap = new Map<number, string>();
+export default function Select<
+				ID extends KeyableType, Multiple extends boolean=false
+>(props: SelectProps<ID,Multiple>){
+	const { value, options, multiple=false } = props;
+	const [searchText,setSearchText] = useState("");
+	const [interSelected,setInterSelected] = useState(new Set<ID>());
+	const intermeDict = useMemo(() => {
+		const hashMap = new Map<ID, string>();
 		options.forEach((it) => {
-			hashMap.set(it.id, it.text);
+			hashMap.set(it.id, it.label);
 		});
 		return hashMap;
 	}, [options]);
-	const text = useMemo(() => {
-		if (multiple) {
-			if (Array.isArray(value) && value.length > 0) {
-				const result: string[] = [];
-				value.forEach((it) => {
-					result.push(translator.get(it)!);
-				});
-				return result.join();
-			} else {
-				return "";
-			}
+	useEffect(() => {
+		if (value && Array.isArray(value)) {
+			setInterSelected(new Set(value));
+		} else if (value) {
+			setInterSelected(new Set([value as ID]));
 		} else {
-			return options.find((it) => it.id === value)?.text ?? "请选择";
+			setInterSelected(new Set());
 		}
-	}, [value, translator]);
-	const handleIfAdd = (event: MouseEvent<HTMLDivElement>) => {
-		event.stopPropagation();
-		addNew!();
+	}, [value]);
+	const displayText = useMemo(()=>{
+		if(multiple){
+			const result:Array<string> = [];
+			interSelected.forEach(id=>{
+				if(intermeDict.has(id)){
+					result.push(String(intermeDict.get(id)));
+				} else {
+					result.push(id.toString());
+				}
+			});
+			return result.join(",");
+		} else {
+			if(interSelected.size!==0){
+				let result:string = "";
+				interSelected.forEach(id=>{
+					if(intermeDict.has(id)){
+						result=String(intermeDict.get(id));
+					} else {
+						result=id.toString();
+					}
+				});
+				return result;
+			} else {
+				return null;
+			}
+		}
+	},[interSelected, intermeDict, multiple]);
+	const [showList,setShowList] = useState(false);
+	const handleSelect = (id:ID)=>{
+		const newSet = new Set(interSelected);
+		if(newSet.has(id)){
+			newSet.delete(id);
+		} else if(props.multiple){
+			newSet.add(id);
+		} else {
+			newSet.clear();
+			newSet.add(id);
+			setShowList(false);
+			setSearchText("");
+		}
+		setInterSelected(newSet);
+		 if(props.multiple){
+			props.onChange(Array.from(newSet) as SelectValue<ID, Multiple>);
+		} else if(newSet.size===0){
+			 props.onChange(undefined as SelectValue<ID, Multiple>);
+		 } else{
+			props.onChange(id as SelectValue<ID, Multiple>);
+		}
 	};
-	const filterNotNull = (newValue: number | number[]) => {
-		if (!onChange) return;
-		if (Array.isArray(newValue)) {
-			onChange(newValue.filter((it) => it !== null));
-		} else if(newValue !== null ) {
-			onChange(newValue);
+	const selectRef = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		const handleClickOutside = (e: MouseEvent) => {
+			if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
+				setShowList(false);
+				setSearchText("");
+			}
+		};
+
+		document.addEventListener("click", handleClickOutside);
+
+		return () => {
+			document.removeEventListener("click", handleClickOutside);
+		};
+	}, []);
+	const filteredOptions = useMemo(() => {
+		if (!props.remote) {
+			// 本地搜索过滤逻辑
+			return options.filter(option =>
+				option.label.toLowerCase().includes(searchText.toLowerCase()),
+			);
 		}
+		// 远程搜索时直接返回所有选项（由父组件控制）
+		return options;
+	}, [searchText, options, props.remote]);
+
+	// 添加防抖的远程搜索
+	const debouncedSearch = useDebounce((text: string) => {
+		if (props.remote) {
+			props.remote(text);
+		}
+	}, 300);
+
+	const handleSearch = (text: string) => {
+		setSearchText(text);
+		debouncedSearch(text);
 	};
 	return (
-		<Listbox multiple={multiple} value={value} onChange={filterNotNull}>
-			{({ open }) => (
-				<>
-					<div className={ss.tailmateSelectRoot}>
-						<ListboxButton className={ss.List}>
-							<div className="flex items-center h-6">
-								<span className="ml-3 block truncate peer">
-									{text}
-								</span>
-								<span
-									className={[
-										"pointer-events-none",
-										"absolute",
-										"start-2.5",
-										"top-0",
-										"-translate-y-1/2",
-										"bg-white",
-										"p-0.5",
-										"text-xs",
-										"text-gray-700",
-										"transition-all",
-										"peer-empty:top-4",
-										"peer-empty:text-sm",
-										"peer-focus:top-0",
-										"peer-focus:text-xs",
-									].join(" ")}
-								>
-									{placeholder ?? "请选择："}
-								</span>
-							</div>
-							<span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-								<ChevronUpDownIcon
-									aria-hidden="true"
-									className="h-5 w-5 text-gray-400"
-								/>
-							</span>
-						</ListboxButton>
+		<div className={ss.tailmateSelectRoot} ref={selectRef}>
+			<div className={ss.tailmateSelectDisplay} onClick={()=>setShowList(true)}>
+				{
+					props.multiple ?
+						null
+						: searchText?
+							null
+							:<span className={[ss.displayText,(showList||!displayText)?ss.open:null].join(" ")}>{displayText??props.placeholder}</span>
+				}
+				{
+					props.search ?
+						<FloatingLabelInput
+							clearable
+							label={props.label}
+							value={searchText}
+							onChange={e=>handleSearch(e.target.value)}
+						/>
+						:null
+				}
 
-						<Transition
-							leave="transition ease-in duration-100"
-							leaveFrom="opacity-100"
-							leaveTo="opacity-0"
-							show={open}
-						>
-							<ListboxOptions className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-hidden sm:text-sm">
-								{options.map((selection) => (
-									<ListboxOption
-										className={({ focus }) =>
-											classNames(
-												focus
-													? "bg-indigo-600 text-white"
-													: "",
-												!focus ? "text-gray-900" : "",
-												"relative cursor-default select-none py-2 pl-3 pr-9",
-											)
-										}
-										key={selection.id}
-										value={selection.id}
-									>
-										{({ selected, focus }) => (
-											<>
-												<div className="flex items-center">
-													<span
-														className={classNames(
-															selected
-																? "font-semibold"
-																: "font-normal",
-															"ml-3 block truncate",
-														)}
-													>
-														{selection.text}
-													</span>
-												</div>
-
-												{selected ? (
-													<span
-														className={classNames(
-															focus
-																? "text-white"
-																: "text-indigo-600",
-															"absolute inset-y-0 right-0 flex items-center pr-4",
-														)}
-													>
-														<CheckIcon
-															aria-hidden="true"
-															className="h-5 w-5"
-														/>
-													</span>
-												) : null}
-											</>
-										)}
-									</ListboxOption>
-								))}
-								{addNew ? (
-									<ListboxOption
-										className={({ focus }) =>
-											classNames(
-												focus
-													? "bg-indigo-600 text-white"
-													: "",
-												!focus ? "text-gray-900" : "",
-												"relative cursor-default select-none py-2 pl-3 pr-9",
-											)
-										}
-										value={null}
-										onClick={handleIfAdd}
-									>
-										{({ focus }) => (
-											<>
-												<div className="flex items-center">
-													<span
-														className={classNames(
-															"font-normal",
-															"ml-3 block truncate",
-														)}
-													>
-														新增
-													</span>
-												</div>
-
-												<span
-													className={classNames(
-														focus
-															? "text-white"
-															: "text-indigo-600",
-														"absolute inset-y-0 right-0 flex items-center pr-4",
-													)}
-												>
-													<PlusIcon
-														aria-hidden="true"
-														className="h-5 w-5"
-													/>
-												</span>
-											</>
-										)}
-									</ListboxOption>
-								) : null}
-							</ListboxOptions>
-						</Transition>
-					</div>
-				</>
-			)}
-		</Listbox>
+			</div>
+			{
+				showList?
+					<div className={ss.tailmateSelectListBoxRoot}>
+						{props.remote&&props.loading
+							?<span className={ss.noData}>loading...</span>
+							:filteredOptions.length>0?
+								filteredOptions.map(it=>{
+									return <Option
+										current={it}
+										key={it.id}
+										selected={interSelected.has(it.id)}
+										onClick={handleSelect}
+									/>;
+								})
+								:<span className={ss.noData}>no data</span>}
+					</div>:null
+			}
+		</div>
 	);
-}
+};

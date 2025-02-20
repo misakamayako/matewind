@@ -1,12 +1,44 @@
 @import 'tailwindcss';
 .tailmateSelectRoot{
-		@apply relative mt-2 w-full;
-	.tailmateSelectListBox{
-		@apply relative w-full cursor-default rounded-md;
-		@apply bg-white ~"py-1.5" pl-3 pr-10 text-left;
-		@apply text-gray-900 shadow-xs ring-1 ring-inset;
-		@apply ring-gray-300;
-		@apply focus:outline-hidden focus:ring-2 focus:ring-indigo-500;
-		@apply sm:text-sm sm:leading-6;
+	@apply relative mt-2 w-full;
+	@apply shadow-md inset-shadow-sm inset-shadow-white/20;
+	@apply ring ring-blue-600 inset-ring inset-ring-white/15;
+	@apply rounded-md;
+	.tailmateSelectDisplay{
+		@apply flex flex-row;
+		height: 42px;
+		.tailmateSelectInput{
+			@apply border-none;
+		}
+	}
+	>button{
+		@apply w-full flex flex-row h-8 justify-between;
+	}
+	.tailmateSelectListBoxRoot{
+		@apply max-h-36 overflow-auto absolute;
+		@apply top-14 w-full;
+		@apply shadow-md inset-shadow-sm inset-shadow-white/20;
+		@apply ring ring-blue-600 inset-ring inset-ring-white/15;
+		@apply rounded-md;
+	}
+	.tailmateSelectChevron{
+		@apply pointer-events-none inset-y-0  ml-3 flex items-center px-2;
+		&.tailmateSelectClearable{
+			@apply pointer-events-auto cursor-pointer;
+		}
+		> svg{
+			@apply h-5 w-5 text-gray-400;
+		}
+	}
+	.displayText{
+		@apply text-gray-700 absolute ~"left-3.5" ~"top-2.5";
+		@apply text-sm z-20 select-none;
+		&.open{
+			@apply text-gray-400;
+		}
+	}
+	.noData{
+		@apply text-gray-400 text-center py-2;
+		@apply block w-full bg-white;
 	}
 }
