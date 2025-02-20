@@ -1,44 +1,112 @@
-import type { Meta ,StoryFn } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
 
 import FloatingLabelInput from "./FloatingLabelInput";
 
-export default {
+const meta: Meta<typeof FloatingLabelInput> = {
 	title: "Component/FloatingLabelInput",
 	component: FloatingLabelInput,
+	tags: ["autodocs"],
 	argTypes: {
-		label: { control: "text", description: "Label for the input field" },
-		prefix: { control: "text", description: "prefix for the input field,also can be ReactNode,not used in textarea" },
-		textArea: { control: "boolean", description: "Render as textarea if true" },
-		placeholder: { control: "text", description: "Placeholder text" },
-		value: { control: "text", description: "Value of the input/textarea" },
-		maxLength: { control: "number", description: "Maximum length of the input/textarea" },
-		rows: { control: "number", description: "Number of rows for textarea (ignored for input)" },
-		onChange: { action: "changed", description: "Change event handler" },
+		size: {
+			control: { type: "select" },
+			options: ["normal", "small"],
+			if: { arg: "textArea", truthy: false },
+		},
+		textArea: {
+			control: { type: "boolean" },
+			defaultValue: false,
+		},
+		clearable: {
+			control: { type: "boolean" },
+			if: { arg: "textArea", truthy: false },
+		},
 	},
-} as Meta;
-
-const Template:StoryFn = (args) => <FloatingLabelInput {...args} />;
-
-export const DefaultInput = Template.bind({});
-DefaultInput.args = {
-	label: "Default Input",
-	prefix: "A prefix",
-	placeholder: "Enter text here...",
-	textArea: false,
 };
 
-export const TextArea = Template.bind({});
-TextArea.args = {
-	label: "Text Area",
-	placeholder: "Type something...",
-	textArea: true,
-	rows: 4,
+export default meta;
+
+type Story = StoryObj<typeof FloatingLabelInput>;
+
+// 基础输入框
+export const Default: Story = {
+	args: {
+		placeholder: "Enter text...",
+		maxLength: 50,
+	},
 };
 
-export const InputWithMaxLength = Template.bind({});
-InputWithMaxLength.args = {
-	label: "Input with Max Length",
-	placeholder: "Max 10 characters",
-	maxLength: 10,
-	textArea: false,
+// 带浮动标签
+export const WithLabel: Story = {
+	args: {
+		label: "Username",
+		placeholder: " ",
+	},
+};
+
+// 带前缀图标
+export const WithPrefix: Story = {
+	args: {
+		prefix: <span style={{ padding: "0 4px" }}>🔍</span>,
+		placeholder: "Search...",
+	},
+	decorators: [
+		(Story) => (
+			<div style={{ width: "300px", margin: "20px auto" }}>
+				<Story />
+			</div>
+		),
+	],
+};
+
+// 小尺寸输入框
+export const SmallSize: Story = {
+	args: {
+		size: "small",
+		label: "Small Input",
+		placeholder: " ",
+	},
+};
+
+// 文本域
+export const TextArea: Story = {
+	args: {
+		textArea: true,
+		label: "Description",
+		rows: 4,
+		placeholder: "Enter description...",
+		maxLength: 200,
+	},
+};
+
+// 带最大长度限制
+export const WithMaxLength: Story = {
+	args: {
+		label: "Tweet",
+		maxLength: 140,
+		placeholder: "What's happening?",
+	},
+};
+
+// 完整功能展示
+export const CompleteExample: Story = {
+	args: {
+		textArea: false,
+		label: "Full Name",
+		size: "normal",
+		prefix: <span style={{ paddingRight: 4 }}>👤</span>,
+		placeholder: " ",
+		maxLength: 30,
+		clearable: true,
+		style: {
+			width: "400px",
+			backgroundColor: "#f5f5f5",
+		},
+	},
+	decorators: [
+		(Story) => (
+			<div style={{ padding: "2rem", display: "flex", justifyContent: "center" }}>
+				<Story />
+			</div>
+		),
+	],
 };

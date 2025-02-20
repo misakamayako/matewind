@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta } from "@storybook/react";
 import {useRef, useState} from "react";
 
 import Option from "./Option";
@@ -9,9 +9,7 @@ const meta = {
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = ()=>{
+export const Default = ()=>{
 	const [selected,setSelected] = useState(false);
 	const current = useRef({
 		id: 1,
