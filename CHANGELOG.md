@@ -13,3 +13,10 @@
 6. 优化了`LazyBy`和`Semaphore`代码
 7. 新增[UseDebounce](https://misakamayako.github.io/matewind/?path=/docs/utils-usedebounce--docs)工具函数
 8. 文档变更和ui调整
+
+## v1.2.1
+1.  将 Less 文件转换为 PostCSS 文件
+2. 将所有 *.less 文件重命名为 *.pcss
+3. 移除 tailwindcss 直接导入，改为引用 index.css
+4. 调整部分 CSS 样式以适应 PostCSS
+5. 更新 package.json 依赖版本
