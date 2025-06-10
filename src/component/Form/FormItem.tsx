@@ -1,7 +1,7 @@
 import type {ReactNode} from "react";
 import { useContext} from "react";
 
-import FormItemStyle from "./FormItem.module.less";
+import FormItemStyle from "./FormItem.module.pcss";
 import {InlineProducer, LabelPositionContext, WidthProducer} from "./FormProducer.ts";
 
 interface Props {

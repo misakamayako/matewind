@@ -1,4 +1,5 @@
-@import 'tailwindcss';
+@reference '../../index.css';
+
 .tailmateTag{
 	@apply hover:text-white text-xs;
 	@apply text-gray-900 relative;
@@ -6,8 +7,8 @@
 	@apply bg-gradient-to-r;
 	@apply flex-row inline-flex;
 	@apply items-center rounded-md;
-	@apply border hover:border-transparent;
-	@apply border-zinc-700;
+	@apply border;
+	@apply border-zinc-700 hover:border-zinc-500;
 	@apply transition-colors duration-300;
 	@apply from-white from-10% via-white via-30% to-white to-90%;
 }

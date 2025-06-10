@@ -1,6 +1,6 @@
 import  React from "react";
 
-import fls from "./FloatingLabelInput.module.less";
+import fls from "./FloatingLabelInput.module.pcss";
 
 interface BaseInputProps {
 	maxLength?: number

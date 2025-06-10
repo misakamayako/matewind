@@ -2,7 +2,7 @@ import {useEffect, useState, useMemo, useRef} from "react";
 import type { MouseEventHandler} from "react";
 
 import {Option,Tag} from "..";
-import ss from "./Select.module.less";
+import ss from "./Select.module.pcss";
 import type {KeyableType, SelectProps, SelectValue} from "./SelectTypes";
 import {useDebounce} from "../../utils";
 import FloatingLabelInput from "../FloatingLabelInput";

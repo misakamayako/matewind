@@ -1,7 +1,7 @@
 import ArrowPathIcon from "@heroicons/react/20/solid/ArrowPathIcon";
 import type { ReactNode } from "react";
 
-import MatewindButtonStyle from "./Button.module.less";
+import MatewindButtonStyle from "./Button.module.pcss";
 
 interface Props {
 	children?: ReactNode;

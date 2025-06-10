@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import PagerStyle from "./Pager.module.less";
+import PagerStyle from "./Pager.module.pcss";
 import Button from "../Button/Button.tsx";
 
 interface PagerProps {

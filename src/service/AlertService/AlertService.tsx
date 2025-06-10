@@ -1,7 +1,7 @@
 import type { Root } from "react-dom/client";
 import { createRoot } from "react-dom/client";
 
-import alertServiceStyle from "./alertservice.module.less";
+import alertServiceStyle from "./alertservice.module.pcss";
 
 enum MessageType {
 	success,

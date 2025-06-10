@@ -1,6 +1,6 @@
 import type {ReactNode} from "react";
 
-import FormStyle from "./FormItem.module.less";
+import FormStyle from "./FormItem.module.pcss";
 import {WidthProducer, InlineProducer, LabelPositionContext} from "./FormProducer";
 
 interface Props {
