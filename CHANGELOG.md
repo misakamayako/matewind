@@ -20,3 +20,6 @@
 3. 移除 tailwindcss 直接导入，改为引用 index.css
 4. 调整部分 CSS 样式以适应 PostCSS
 5. 更新 package.json 依赖版本
+
+## v1.2.2
+1. 修复风险依赖项
